@@ -59,13 +59,43 @@ public:
             current = current->next;
         }
 
-        // If key doesn't exist, create new node
+        // If key doesn't exist, create new node or in the end if there is another key inside (tail)
         Node* newNode = new Node(key, value);
-        newNode->next = this->table[index]; // Point to old head
-        this->table[index] = newNode;       // New head
+        if (this->table[index] == nullptr) { // Jika bucket kosong
+            this->table[index] = newNode;
+        } else { // Jika bucket tidak kosong, cari ekornya
+            Node* temp = this->table[index];
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newNode;
+        }
+
         this->itemCount++;
 
         cout << "Inserted: " << key << " -> " << value << " at index " << index << endl;
+    }
+
+    void displayAllChains() {
+        cout << "--- Displaying All Hash Table Chains ---" << endl;
+        for (int i = 0; i < this->tableSize; ++i) {
+            cout << "Index " << i << ": ";
+            Node* current = this->table[i];
+
+            if (current == nullptr) {
+                cout << "Empty";
+            } else {
+                while (current != nullptr) {
+                    cout << current->key << " (" << current->value << ")";
+                    if (current->next != nullptr) {
+                        cout << " -> ";
+                    }
+                    current = current->next;
+                }
+            }
+            cout << endl; // Pindah ke baris baru untuk indeks berikutnya
+        }
+        cout << "--------------------------------------" << endl;
     }
 
     void update(string key, string value) {
@@ -133,8 +163,8 @@ public:
 
 void display_vector(const vector<int> &v)
 {
-    std::copy(v.begin(), v.end(),
-        std::ostream_iterator<int>(std::cout, " "));
+    copy(v.begin(), v.end(),
+        ostream_iterator<int>(cout, " "));
 }
 
 int convertString(string input) {
@@ -301,9 +331,20 @@ void maxChainLength(vector<int>& data) {
 }
 
 int main() {
-    string names[10] = {
-        "Andi", "Putri", "Rizki", "Budi", "Alexa",
-        "Dewi", "Zacky", "Deni", "Ahmad", "Hanam"
+    string names[62] = {
+        "Alice Smith", "Bob Johnson", "Charlie Brown", "Diana Miller", "Ethan Davis",
+        "Fiona Garcia", "George Rodriguez", "Hannah Martinez", "Ivan Hernandez", "Julia Lopez",
+        "Kevin Gonzalez", "Laura Wilson", "Michael Anderson", "Nancy Thomas", "Olivia Jackson",
+        "Paul White", "Quinn Harris", "Rachel Clark", "Steven Lewis", "Tina Young",
+        "Ursula Hall", "Victor Allen", "Wendy Scott", "Xavier King", "Yara Green",
+        "Zachary Adams", "Amy Baker", "Brian Nelson", "Catherine Hill", "Daniel Carter",
+        "Emily Roberts", "Frank Campbell", "Grace Phillips", "Henry Evans", "Isabel Turner",
+        "Jack Wright", "Karen Parker", "Liam Morris", "Mia Murphy", "Noah Rivera",
+        "Olivia Cooper", "Peter Ward", "Quincy Bailey", "Rebecca Bell", "Samuel Cox",
+        "Sophia Rogers", "Thomas Reed", "Uma Kelly", "Vincent Price", "Willow Peterson",
+        "Xenia Foster", "Yusuf Sanders", "Zoe Ross", "Arthur Wood", "Brenda Cole",
+        "Caleb Morgan", "Daisy Kim", "Edward James", "Felicity Gray", "Gavin Myers",
+        "Holly Fisher", "Ian Henderson"
     };
 
     int tableSize[3] = {31, 101, 503};
@@ -314,19 +355,17 @@ int main() {
         hashTable.insert(names[i], names[i]);
     }
 
-    cout << hashTable.search("Ahmad") << endl;
+    cout << hashTable.search("Daisy Kim") << endl;
 
-    hashTable.insert("Ahmad", "Subarjo");
+    hashTable.update("Daisy Kim", "Kim Dokja");
 
-    cout << hashTable.search("Ahmad") << endl;
+    cout << hashTable.search("Daisy Kim") << endl;
 
-    hashTable.update("Ahmad", "Ahlan");
+    hashTable.deleteKey("Daisy Kim");
 
-    cout << hashTable.search("Ahmad") << endl;
+    cout << hashTable.search("Daisy Kim") << endl;
 
-    hashTable.deleteKey("Ahmad");
-
-    cout << hashTable.search("Ahmad") << endl;
+    hashTable.displayAllChains();
 
     return 0;
 }
